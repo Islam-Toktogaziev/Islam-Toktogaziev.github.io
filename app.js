@@ -1,5 +1,5 @@
 firebase.initializeApp({
-    messagingSenderId: '688937240282'
+    messagingSenderId: '448358493027'
 });
 
 
@@ -151,6 +151,7 @@ if (
     updateUIForPushPermissionRequired();
 }
 
+
 function getToken() {
     messaging.requestPermission()
         .then(function() {
@@ -229,13 +230,11 @@ function sendNotification(notification) {
 // - subscribe/unsubscribe the token from topics
 function sendTokenToServer(currentToken) {
     if (!isTokenSentToServer(currentToken)) {
-        alert(currentToken)
         console.log('Sending token to server...');
         // send current token to server
         //$.post(url, {token: currentToken});
         setTokenSentToServer(currentToken);
     } else {
-        alert("already")
         console.log('Token already sent to server so won\'t send it again unless it changes');
     }
 }

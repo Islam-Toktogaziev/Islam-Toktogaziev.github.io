@@ -1,45 +1,39 @@
-importScripts("https://www.gstatic.com/firebasejs/8.6.2/firebase-app.js");
-importScripts("https://www.gstatic.com/firebasejs/8.6.2/firebase-analytics.js");
-importScripts("https://www.gstatic.com/firebasejs/8.6.2/firebase-messaging.js");
-//Using singleton breaks instantiating messaging()
-// App firebase = FirebaseWeb.instance.app;
-
+importScripts('https://www.gstatic.com/firebasejs/3.7.2/firebase-app.js');
+importScripts('https://www.gstatic.com/firebasejs/3.7.2/firebase-messaging.js');
 
 firebase.initializeApp({
-  apiKey: "AIzaSyD4tdTuH5hCUHKOR5gfGGs3r06bSiie5gw",
-    authDomain: "cms-neolabs-cfb67.firebaseapp.com",
-    projectId: "cms-neolabs-cfb67",
-    storageBucket: "cms-neolabs-cfb67.appspot.com",
-    messagingSenderId: "688937240282",
-    appId: "1:688937240282:web:a01c3a4cfdd4c7dd2847e3",
-    measurementId: "G-QVCFLL52F6"
+  messagingSenderId: '448358493027'
 });
-firebase.analytics();
 
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker
-  .register("/firebase-messaging-sw.js")
-  .then(function(registration) {
-console.log("Registration successful, scope is:", registration.scope);
-messaging.getToken({vapidKey: 'BFN3N44ZPDGqh7NKCsl_EVacJK_s91lHkSwjTNsNCmgHcVuC149OLmCJhSdJz7f-K-B_vhwdHsCl-o0KhWOoneE', serviceWorkerRegistration : registration })
-.then((currentToken) => {
-  if (currentToken) {
-      alert(currentToken);
-    console.log('current token for client: ', currentToken);
+const messaging = firebase.messaging();
 
-    // Track the token -> client mapping, by sending to backend server
-    // show on the UI that permission is secured
-  } else {
-    console.log('No registration token available. Request permission to generate one.');
+// Customize notification handler
+messaging.setBackgroundMessageHandler(function(payload) {
+  console.log('Handling background message', payload);
 
-    // shows on the UI that permission is required 
-  }
-}).catch((err) => {
-  console.log('An error occurred while retrieving token. ', err);
-  // catch error while creating client token
-});  
-})
-.catch(function(err) {
-console.log("Service worker registration failed, error:"  , err );
-}); 
-}
+  // Copy data object to get parameters in the click handler
+  payload.data.data = JSON.parse(JSON.stringify(payload.data));
+
+  return self.registration.showNotification(payload.data.title, payload.data);
+});
+
+self.addEventListener('notificationclick', function(event) {
+  const target = event.notification.data.click_action || '/';
+  event.notification.close();
+
+  // This looks to see if the current is already open and focuses if it is
+  event.waitUntil(clients.matchAll({
+    type: 'window',
+    includeUncontrolled: true
+  }).then(function(clientList) {
+    // clientList always is empty?!
+    for (var i = 0; i < clientList.length; i++) {
+      var client = clientList[i];
+      if (client.url === target && 'focus' in client) {
+        return client.focus();
+      }
+    }
+
+    return clients.openWindow(target);
+  }));
+});
