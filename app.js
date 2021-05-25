@@ -151,7 +151,6 @@ if (
     updateUIForPushPermissionRequired();
 }
 
-
 function getToken() {
     messaging.requestPermission()
         .then(function() {

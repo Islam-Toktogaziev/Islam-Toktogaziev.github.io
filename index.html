@@ -16,17 +16,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/css/materialize.min.css">
     <!-- Compiled and minified JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/js/materialize.min.js"></script>
-    <style type="text/css">
-        #alert,
-        #info,
-        #delete,
-        #notification,
-        #massage_row {
-            display: none;
-        }
-    </style>
+
 </head>
 <body>
+    <script>
+        if ("serviceWorker" in navigator) {
+          window.addEventListener("load", function () {
+            // navigator.serviceWorker.register("/flutter_service_worker.js");
+            navigator.serviceWorker.register('/firebase-messaging-sw.js');
+            navigator.serviceWorker.register('/serviceworker/firebase-messaging-sw.js');
+          });
+        }
+    </script>
+
 <nav class="light-blue lighten-1" role="navigation">
     <div class="nav-wrapper container">
         <h3 class="brand-logo">Firebase Cloud Messaging</h3>
